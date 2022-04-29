@@ -3,6 +3,7 @@
 use app\models\Dish;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
@@ -29,10 +30,16 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'name',
             [
-                'class' => ActionColumn::className(),
+                'content' => function (Dish $model) {
+                    $ingredients = ArrayHelper::getColumn($model->ingredients, 'name');
+                    return implode('<br>', $ingredients);
+                }
+            ],
+            [
+                'class'      => ActionColumn::className(),
                 'urlCreator' => function ($action, Dish $model, $key, $index, $column) {
                     return Url::toRoute([$action, 'id' => $model->id]);
-                 }
+                }
             ],
         ],
     ]); ?>
