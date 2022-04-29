@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Dish;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
 use yii\helpers\Html;

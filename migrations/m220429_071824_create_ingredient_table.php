@@ -13,8 +13,9 @@ class m220429_071824_create_ingredient_table extends Migration
     public function safeUp()
     {
         $this->createTable('{{%ingredient}}', [
-            'id' => $this->primaryKey(),
-            'name' => $this->string()->notNull()->unique(),
+            'id'     => $this->primaryKey(),
+            'name'   => $this->string()->notNull()->unique(),
+            'active' => $this->boolean()->defaultValue(1),
         ]);
     }
 

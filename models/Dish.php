@@ -44,7 +44,7 @@ class Dish extends ActiveRecord
             [['name'], 'required'],
             [['name'], 'string', 'max' => 255],
             [['name'], 'unique'],
-            [['ingredients'],'each' , 'rule' => ['integer']]
+            [['ingredients'], 'safe']
         ];
     }
 

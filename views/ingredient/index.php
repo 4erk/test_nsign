@@ -29,10 +29,16 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'name',
             [
-                'class' => ActionColumn::className(),
+                'attribute' => 'active',
+                'content'   => static function (Ingredient $model) {
+                    return $model->active ? 'Yes' : 'No';
+                }
+            ],
+            [
+                'class'      => ActionColumn::className(),
                 'urlCreator' => function ($action, Ingredient $model, $key, $index, $column) {
                     return Url::toRoute([$action, 'id' => $model->id]);
-                 }
+                }
             ],
         ],
     ]); ?>

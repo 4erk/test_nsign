@@ -8,11 +8,12 @@ use yii\db\ActiveRecord;
 /**
  * This is the model class for table "ingredient".
  *
- * @property int $id
- * @property string $name
+ * @property int              $id
+ * @property string           $name
+ * @property int              $active
  *
  * @property DishIngredient[] $dishIngredients
- * @property Dish[] $dishes
+ * @property Dish[]           $dishes
  */
 class Ingredient extends ActiveRecord
 {
@@ -33,6 +34,8 @@ class Ingredient extends ActiveRecord
             [['name'], 'required'],
             [['name'], 'string', 'max' => 255],
             [['name'], 'unique'],
+            [['active'], 'integer'],
+            [['active'], 'default', 'value' => 1]
         ];
     }
 
