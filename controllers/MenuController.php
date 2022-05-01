@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\Dish;
+use app\models\Ingredient;
 use app\models\MenuForm;
 use Yii;
 use yii\db\Query;
@@ -32,6 +33,13 @@ class MenuController extends Controller
             $query = Dish::find()->select(['dish.*', 'cnt' => 'count(*)'])
                 ->innerJoin(['di' => 'dish_ingredient'], 'di.dish_id = dish.id')
                 ->where(['in', 'di.ingredient_id', $model->ingredients])->groupBy('dish.id');
+
+            /** Query for exclude dish with inactive ingredients  */
+            $queryExcludeInactive = Ingredient::find()->innerJoin(['di' => 'dish_ingredient'], 'di.ingredient_id = ingredient.id')
+                ->where(['ingredient.active' => 0])->select('di.dish_id');
+
+            $query->andWhere(['not in', 'dish.id', $queryExcludeInactive]);
+
 
             /** Query for full coincidence ingredients */
             $queryFull = clone $query;
