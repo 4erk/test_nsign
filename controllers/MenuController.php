@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\models\Dish;
 use app\models\MenuForm;
 use Yii;
+use yii\db\Query;
 use yii\web\Controller;
 
 class MenuController extends Controller
@@ -27,11 +28,21 @@ class MenuController extends Controller
         }
 
         if (!$error) {
-            $query     = Dish::find()->select(['dish.*', 'cnt' => 'count(*)'])
+            /** Base query */
+            $query = Dish::find()->select(['dish.*', 'cnt' => 'count(*)'])
                 ->innerJoin(['di' => 'dish_ingredient'], 'di.dish_id = dish.id')
                 ->where(['in', 'di.ingredient_id', $model->ingredients])->groupBy('dish.id');
+
+            /** Query for full coincidence ingredients */
             $queryFull = clone $query;
-            $queryFull->having('cnt = :cnt', ['cnt' => count($model->ingredients)]);
+
+            /** Query for check full coincidence */
+            $queryIngredientCount = new Query();
+            $queryIngredientCount->select('count(*)')->from('dish_ingredient di2')
+                ->where('di2.dish_id = dish.id');
+
+            $queryFull->having(['cnt' => $queryIngredientCount])
+                ->andHaving(['cnt' => count($model->ingredients)]);
             if ($queryFull->count() > 0) {
                 $dishes = $queryFull->all();
             }
