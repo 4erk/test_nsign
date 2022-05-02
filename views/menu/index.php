@@ -12,7 +12,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
-$ingredientList = ArrayHelper::map(Ingredient::find()->all(), 'id', 'name');
+$ingredientList = ArrayHelper::map(Ingredient::find()->where(['active' => 1])->all(), 'id', 'name');
 ?>
 <?php $form = ActiveForm::begin(); ?>
 <h3>
