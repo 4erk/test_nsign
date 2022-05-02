@@ -2,11 +2,9 @@
 
 namespace app\controllers;
 
-use app\models\Dish;
-use app\models\Ingredient;
+use app\components\DishSearch;
 use app\models\MenuForm;
 use Yii;
-use yii\db\Query;
 use yii\web\Controller;
 
 class MenuController extends Controller
@@ -29,36 +27,16 @@ class MenuController extends Controller
         }
 
         if (!$error) {
-            /** Base query */
-            $query = Dish::find()->select(['dish.*', 'cnt' => 'count(*)'])
-                ->innerJoin(['di' => 'dish_ingredient'], 'di.dish_id = dish.id')
-                ->where(['in', 'di.ingredient_id', $model->ingredients])->groupBy('dish.id');
+            $query = DishSearch::getDishesByFullIngredientsQuery($model->ingredients);
 
-            /** Query for exclude dish with inactive ingredients  */
-            $queryExcludeInactive = Ingredient::find()->innerJoin(['di' => 'dish_ingredient'], 'di.ingredient_id = ingredient.id')
-                ->where(['ingredient.active' => 0])->select('di.dish_id');
-
-            $query->andWhere(['not in', 'dish.id', $queryExcludeInactive]);
-
-
-            /** Query for full coincidence ingredients */
-            $queryFull = clone $query;
-
-            /** Query for check full coincidence */
-            $queryIngredientCount = new Query();
-            $queryIngredientCount->select('count(*)')->from('dish_ingredient di2')
-                ->where('di2.dish_id = dish.id');
-
-            $queryFull->having(['cnt' => $queryIngredientCount])
-                ->andHaving(['cnt' => count($model->ingredients)]);
-            if ($queryFull->count() > 0) {
-                $dishes = $queryFull->all();
+            if ($query->count() > 0) {
+                $dishes = $query->all();
             }
             else {
-                $queryPart = clone $query;
-                $queryPart->having('cnt > 1')->orderBy(['cnt' => SORT_DESC]);
-                if ($queryPart->count() > 0) {
-                    $dishes = $queryPart->all();
+                /** Query for part coincidence */
+                $query = DishSearch::getDishesByPartIngredientsQuery($model->ingredients);
+                if ($query->count() > 0) {
+                    $dishes = $query->all();
                 }
                 else {
                     $error = 'Dishes not found';
@@ -67,5 +45,4 @@ class MenuController extends Controller
         }
         return $this->render('index', ['model' => $model, 'error' => $error, 'dishes' => $dishes]);
     }
-
 }
