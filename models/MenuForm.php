@@ -11,7 +11,10 @@ class MenuForm extends Model
     public function rules()
     {
         return [
+
             [['ingredients'], 'each', 'rule' => ['integer']],
         ];
     }
+
+
 }

@@ -17,13 +17,20 @@ class MenuController extends Controller
         $error  = false;
         $dishes = [];
         if ($model->validate()) {
-            $cntIngredients = count($model->ingredients);
-            if ($cntIngredients < 2) {
+            if (!is_array($model->ingredients)) {
                 $error = 'Choose more ingredients';
+
             }
-            if ($cntIngredients > 5) {
-                $error = 'Choose fewer ingredients';
+            else {
+                $cntIngredients = count($model->ingredients);
+                if ($cntIngredients < 2) {
+                    $error = 'Choose more ingredients';
+                }
+                if ($cntIngredients > 5) {
+                    $error = 'Choose fewer ingredients';
+                }
             }
+
         }
 
         if (!$error) {
